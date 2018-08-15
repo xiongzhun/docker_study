@@ -1,5 +1,14 @@
-FROM daocloud.io/nginx:1.11-alpine
-COPY . /usr/share/nginx/html
-EXPOSE 80
-# Start Nginx and keep it running background and start php
-CMD sed -i "s/ContainerID: /ContainerID: "$(hostname)"/g" /usr/share/nginx/html/index.html && nginx -g "daemon off;"
+# Dockerfile for building CentOS images
+FROM       centos:centos6.7
+ENV TZ "Asia/Shanghai"
+ENV TERM xterm
+Run yum clean all && yum makecache
+Run yum install -y pwgen openssh-server git  supervisor python-pip
+RUN yum install -y wget curl tar bzip2  vim-enhanced sudo yum-utils 
+Run yum install -y npm git
+Run git clone -b ci https://github.com/xiongzhun/docker_study.git /blog
+Run cd /blog && git pull
+Run git clone -b gh-pages https://github.com/xiongzhun/docker_study.git
+Run mkdir source && nv docker_study/source/* source
+Run npm install
+Run hexo g && Hexo d
